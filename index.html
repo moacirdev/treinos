@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App de Treino</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            color: #333333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            color: #007BFF;
+        }
+        .button {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 16px;
+            background: #007BFF;
+            color: white;
+            text-align: center;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        .exercise-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .exercise-list li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            background-color: #e3f2fd; /* Azul claro */
+        }
+        .exercise-list input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        .exercise-list span {
+            flex: 1;
+            text-align: left;
+        }
+        .exercise-list input[type="text"] {
+            width: 80px;
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #cccccc;
+            text-align: center;
+            background: #ffffff;
+            color: #333333;
+            margin-right: 10px; /* Espaço entre carga e botão */
+        }
+        .exercise-list a {
+            color: #007BFF;
+            text-decoration: none;
+            padding: 5px 10px;
+            border: 1px solid #007BFF;
+            border-radius: 4px;
+            text-align: center;
+            background: #ffffff;
+        }
+        .exercise-list a:hover {
+            background: #007BFF;
+            color: white;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .footer small {
+            color: #666666;
+        }
+        .exercise-list .completed {
+            text-decoration: line-through;
+            color: #999999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="home">
+        <h1>Bem-vindo ao APP de Treino</h1>
+        <p>Escolha o treino que deseja realizar:</p>
+        <button class="button" onclick="selectTraining('TREINO A')">Treino A</button>
+        <button class="button" onclick="selectTraining('TREINO B')">Treino B</button>
+        <div class="footer">
+            <small id="last-training"></small>
+        </div>
+    </div>
+
+    <div class="container" id="training" style="display: none;">
+        <h2 id="training-title">Treino</h2>
+        <p id="date"></p>
+        <label>
+            <input type="checkbox" id="select-all" onchange="toggleAll(this)"> Marcar/Desmarcar Todos
+        </label>
+        <ul class="exercise-list" id="exercise-list"></ul>
+        <button class="button" onclick="saveTraining()">Finalizar Treino</button>
+    </div>
+
+    <script>
+        const exercisesA = [
+            { name: "ESTEIRA 20min", load: "20min", video: "https://www.youtube.com/shorts/-bAFkk_Ufxg" },
+            { name: "SUPINO SENTADO", load: "35kg", video: "https://www.youtube.com/shorts/A8OnDupQiNk" },
+            { name: "EXTENSOR DE JOELHOS", load: "20kg", video: "https://www.youtube.com/shorts/L6lR28PJ8j4" },
+            { name: "CRUCIFIXO NO APARELHO", load: "45kg", video: "https://www.youtube.com/shorts/EnCO3JoIZ4k" },
+            { name: "LEG PRESS SENTADO", load: "80kg", video: "https://www.youtube.com/shorts/XJzJeiJGYiM" },
+            { name: "TRICEPS MERGULHO - MAC", load: "40kg", video: "https://www.youtube.com/shorts/jmznZ45g8jc" },
+            { name: "ADUTOR NO APARELHO", load: "110kg", video: "https://www.youtube.com/shorts/SO-fepxuS6A" },
+            { name: "TRICEPS NO PULLEY", load: "25kg", video: "https://www.youtube.com/shorts/a4-Zi-_ClWU" },
+            { name: "AGACHAMENTO NO HACK", load: "8kg", video: "https://www.youtube.com/shorts/nGjp9JUaQ6A" },
+            { name: "DESENVOLV NO A. ABERTA", load: "20kg", video: "https://www.youtube.com/shorts/-dQbMqCi5RA" },
+            { name: "ABS APARELHO (LF)", load: "17.5kg", video: "https://www.youtube.com/shorts/EiaFrU5dsNM" },
+            { name: "ESTEIRA", load: "15min", video: "https://www.youtube.com/shorts/-bAFkk_Ufxg" }
+        ];
+
+        const exercisesB = [
+            { name: "ESTEIRA 20min", load: "20min", video: "https://www.youtube.com/shorts/-bAFkk_Ufxg" },
+            { name: "PUXADA COM TRIANGULO", load: "40kg", video: "https://youtube.com/shorts/wKOSSwIxO3g?si=3Toi2ufG4lO18bWb" },
+            { name: "FLEXOR DE JOELHOS", load: "16kg", video: "https://www.youtube.com/shorts/vWqi5uAnEu4" },
+            { name: "REMADA FECHADA", load: "22.5kg", video: "https://www.youtube.com/shorts/W9OirqFDEBE" },
+            { name: "ABDUTOR NO APARELHO", load: "110kg", video: "https://www.youtube.com/results?search_query=abdutor" },
+            { name: "BICEPS BILAT. HALTER", load: "8kg+8kg", video: "https://www.youtube.com/shorts/ZC1pIp_X1aY" },
+            { name: "PANTURRILHA NO STEP", load: "Corporal", video: "https://www.youtube.com/shorts/FuKBeGbOjRk" },
+            { name: "BICEPS HALTER MARTELO", load: "7kg", video: "https://www.youtube.com/shorts/oBrWmkbJBeQ" },
+            { name: "ENCOLHIM. OMBRO HALTER", load: "8kg", video: "https://www.youtube.com/shorts/i80MM-yLnhU" },
+            { name: "GLÚTEO NO APARELHO", load: "16kg", video: "https://www.youtube.com/shorts/Fauu0zhE5mM" },
+            { name: "LOMBAR NO APARELHO", load: "35kg", video: "https://youtube.com/shorts/Hf3e7yvqWk4?si=8hFQrUcwJWO757Bv" },
+            { name: "ESTEIRA", load: "15min", video: "https://www.youtube.com/shorts/-bAFkk_Ufxg" }
+        ];
+
+        const currentTraining = {
+            name: "",
+            exercises: [],
+        };
+
+        function selectTraining(trainingName) {
+            const trainingDiv = document.getElementById("training");
+            const homeDiv = document.getElementById("home");
+            const trainingTitle = document.getElementById("training-title");
+            const exerciseList = document.getElementById("exercise-list");
+
+            currentTraining.name = trainingName;
+            currentTraining.exercises = trainingName === "TREINO A" ? exercisesA : exercisesB;
+
+            trainingTitle.textContent = trainingName;
+
+            exerciseList.innerHTML = currentTraining.exercises.map((exercise, index) => `
+                <li>
+                    <input type="checkbox" id="exercise-${index}" onchange="toggleComplete(${index})">
+                    <span id="text-${index}">${exercise.name}</span>
+                    <input type="text" id="load-${index}" value="${getLoadFromLocalStorage(trainingName, index) || exercise.load}" onchange="updateLoad('${trainingName}', ${index})">
+                    <a href="${exercise.video}" target="_blank">Vídeo</a>
+                </li>
+            `).join("");
+
+            document.getElementById("date").textContent = `Data: ${new Date().toLocaleDateString()}`;
+            homeDiv.style.display = "none";
+            trainingDiv.style.display = "block";
+
+            updateLastTraining();
+        }
+
+        function saveTraining() {
+            const completedExercises = currentTraining.exercises.filter((_, index) => document.getElementById(`exercise-${index}`).checked);
+            if (completedExercises.length === 0) {
+                alert("Marque pelo menos um exercício como concluído!");
+                return;
+            }
+
+            const lastTraining = {
+                name: currentTraining.name,
+                date: new Date().toLocaleDateString()
+            };
+            localStorage.setItem("lastTraining", JSON.stringify(lastTraining));
+
+            alert("Treino concluído!");
+            document.getElementById("training").style.display = "none";
+            document.getElementById("home").style.display = "block";
+        }
+
+        function toggleAll(selectAllCheckbox) {
+            const checkboxes = document.querySelectorAll(".exercise-list input[type='checkbox']");
+            checkboxes.forEach((checkbox, index) => {
+                checkbox.checked = selectAllCheckbox.checked;
+                toggleComplete(index);
+            });
+        }
+
+        function toggleComplete(index) {
+            const checkbox = document.getElementById(`exercise-${index}`);
+            const text = document.getElementById(`text-${index}`);
+            if (checkbox.checked) {
+                text.classList.add("completed");
+            } else {
+                text.classList.remove("completed");
+            }
+        }
+
+        function updateLastTraining() {
+            const lastTraining = JSON.parse(localStorage.getItem("lastTraining"));
+            if (lastTraining) {
+                const footer = document.getElementById("last-training");
+                footer.textContent = `Último Treino: ${lastTraining.name} em ${lastTraining.date}`;
+            }
+        }
+
+        function updateLoad(trainingName, index) {
+            const loadValue = document.getElementById(`load-${index}`).value;
+            localStorage.setItem(`${trainingName}-load-${index}`, loadValue);
+        }
+
+        function getLoadFromLocalStorage(trainingName, index) {
+            return localStorage.getItem(`${trainingName}-load-${index}`);
+        }
+
+        window.onload = updateLastTraining;
+    </script>
+</body>
+</html>
